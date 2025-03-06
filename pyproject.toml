@@ -1,0 +1,12 @@
+[project]
+name = "trajgen"
+version = "0.0.1"
+
+dependencies=[
+    "torch",  # gpu
+    "viser",
+]
+
+[tool.setuptools.packages.find]
+include = ["trajgen"]
+
