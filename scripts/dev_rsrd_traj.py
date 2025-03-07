@@ -6,7 +6,7 @@ import torch
 import time
 from nerfstudio.utils.eval_utils import eval_setup
 import numpy as np
-from traj_interp import traj_interp
+from trajgen.traj_interp import traj_interp
 
 def main(
     track_dir: Path,
@@ -79,7 +79,8 @@ def main(
         traj = np.concatenate([single_obj_traj[:, 4:].cpu().detach().numpy(), single_obj_traj[:, :4].cpu().detach().numpy()], axis=1)
         new_traj = traj_interp(
             traj = traj,
-            new_start = new_startpose,   
+            new_start = new_startpose,  
+            proportion=0.6 
         )
         for idx, pose in enumerate(new_traj):
             interp_traj_frame_handles.append(server.scene.add_frame(

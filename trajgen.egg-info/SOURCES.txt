@@ -1,0 +1,7 @@
+pyproject.toml
+trajgen/traj_interp.py
+trajgen.egg-info/PKG-INFO
+trajgen.egg-info/SOURCES.txt
+trajgen.egg-info/dependency_links.txt
+trajgen.egg-info/requires.txt
+trajgen.egg-info/top_level.txt
