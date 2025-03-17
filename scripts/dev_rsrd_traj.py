@@ -4,28 +4,28 @@ from pathlib import Path
 import json
 import torch
 import time
-from nerfstudio.utils.eval_utils import eval_setup
+# from nerfstudio.utils.eval_utils import eval_setup
 import numpy as np
 from trajgen.traj_interp import traj_interp
 
 def main(
     track_dir: Path,
-    dig_config_path: Path,
+    # dig_config_path: Path,
     ):
     # Load trajectory
-    if (track_dir / "cache_info.json").exists():
-        cache_data = json.loads((track_dir / "cache_info.json").read_text())
+    # if (track_dir / "cache_info.json").exists():
+    #     cache_data = json.loads((track_dir / "cache_info.json").read_text())
 
-        if dig_config_path is None:
-            dig_config_path = Path(cache_data["dig_config_path"])
-    else:
-        raise FileNotFoundError("No cache info found in track.")
+    #     if dig_config_path is None:
+    #         dig_config_path = Path(cache_data["dig_config_path"])
+    # else:
+    #     raise FileNotFoundError("No cache info found in track.")
     
-    assert dig_config_path is not None, "Must provide a dig config path."
+    # assert dig_config_path is not None, "Must provide a dig config path."
     
-    train_config, pipeline, _, _ = eval_setup(dig_config_path)
-    del pipeline.garfield_pipeline
-    pipeline.eval()
+    # train_config, pipeline, _, _ = eval_setup(dig_config_path)
+    # del pipeline.garfield_pipeline
+    # pipeline.eval()
     
     track_data_path = track_dir / "keyframes.txt"
     if not track_data_path.exists():

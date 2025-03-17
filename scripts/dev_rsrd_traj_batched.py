@@ -4,34 +4,20 @@ from pathlib import Path
 import json
 import torch
 import time
-from nerfstudio.utils.eval_utils import eval_setup
 import numpy as np
+# from nerfstudio.utils.eval_utils import eval_setup
 from trajgen.traj_interp import traj_interp_batch, generate_directional_starts
 import trajgen.transforms as ttf
 
 
 def main(
     track_dir: Path,
-    dig_config_path: Path,
+    # dig_config_path: Path,
     batch_size: int = 10,
     magnitude: float = 0.15,
     direction_weight: float = 0.4,
     perp_variation: float = 0.2,
     ):
-    # Load trajectory
-    if (track_dir / "cache_info.json").exists():
-        cache_data = json.loads((track_dir / "cache_info.json").read_text())
-
-        if dig_config_path is None:
-            dig_config_path = Path(cache_data["dig_config_path"])
-    else:
-        raise FileNotFoundError("No cache info found in track.")
-    
-    assert dig_config_path is not None, "Must provide a dig config path."
-    
-    train_config, pipeline, _, _ = eval_setup(dig_config_path)
-    del pipeline.garfield_pipeline
-    pipeline.eval()
     
     track_data_path = track_dir / "keyframes.txt"
     if not track_data_path.exists():
@@ -41,7 +27,6 @@ def main(
     part_deltas = torch.nn.Parameter(torch.tensor(trackdata["part_deltas"]).cuda())
     
     # IMPORTANT: Reorder from [batch, part, xyzwxyz] to [batch, part, wxyzxyz]
-    # single_obj_traj = torch.cat([part_deltas[:,1,:4], part_deltas[:,1,4:]], dim=0).reshape(-1, 7)
     single_obj_traj = part_deltas[:,1,:]
     server = viser.ViserServer()
     
@@ -98,8 +83,8 @@ def main(
         new_starts=new_start_poses,
         proportion=0.6 
     )
-    import pdb; pdb.set_trace()
     print(f"Time to interp {batch_size} trajectories: {time.time() - start_time}")
+    import pdb; pdb.set_trace()
     
     # Visualize new trajectories
     for traj_idx, new_traj in enumerate(new_trajs):

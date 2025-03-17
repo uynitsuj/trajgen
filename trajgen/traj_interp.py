@@ -105,12 +105,12 @@ def traj_interp_batch(
     Batch-interpolate multiple trajectories from the given starts to ends.
     
     Args:
-        traj: (T, wxyzxyz), T is the number of waypoints, describes how object moves in the world frame in the demonstration 
+        traj: (T, wxyzxyz), T is the number of waypoints, describes how object moves in the world frame in the demonstration
         new_starts: (B, wxyzxyz), B is the batch size, the start waypoints of the new trajectories
         new_ends: (B, wxyzxyz) or None, the end waypoints of the new trajectories
         mode: interpolation mode for position ('xyz' or 'xy')
         proportion: the proportion of the trajectory (leading edge) that is interpolated.
-        
+    
     Returns:
         Batch of interpolated trajectories (B, T, wxyzxyz)
     """
@@ -285,7 +285,7 @@ def find_nulls_scales(orig_start, orig_end, new_start, new_end, epsilon=1e-10):
             
     return np.array(nulls), np.array(scales)
     
-def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.15, direction_weight=0.4, perp_variation=0.2):
+def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.1, direction_weight=0.4, perp_variation=0.19): # 0.07, 0.4, 0.15
     """
     Generate varied distribution of new start positions that tend to be in the direction away from the end of the trajectory.
     
@@ -364,7 +364,7 @@ def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.15, dir
     for i in range(batch_size):
         # if torch.rand(1).item() > 0.5:
         # Z-axis rotation with wider range
-        z_rot = ttf.SO3.from_z_radians(torch.randn(1) * np.pi/2)
+        z_rot = ttf.SO3.from_z_radians(torch.randn(1) * np.pi/3) # 8
         new_starts[i, :4] = new_starts[i, :4] + z_rot.wxyz.to(new_starts.device)
         # else:
         #     # Random axis rotation
