@@ -285,7 +285,7 @@ def find_nulls_scales(orig_start, orig_end, new_start, new_end, epsilon=1e-10):
             
     return np.array(nulls), np.array(scales)
     
-def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.1, direction_weight=0.4, perp_variation=0.19): # 0.07, 0.4, 0.15
+def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.07, direction_weight=0.4, perp_variation=0.15): # 0.07, 0.4, 0.15
     """
     Generate varied distribution of new start positions that tend to be in the direction away from the end of the trajectory.
     
@@ -358,28 +358,13 @@ def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.1, dire
         
         # Apply the displacement to the position
         new_starts[i, 4:] = start_pos + displacement
-    
-    # Also add some rotation variation - use more diverse rotations
-    # Mix of z-axis and arbitrary axis rotations
+
     for i in range(batch_size):
-        # if torch.rand(1).item() > 0.5:
-        # Z-axis rotation with wider range
-        z_rot = ttf.SO3.from_z_radians(torch.randn(1) * np.pi/3) # 8
+        z_rot = ttf.SO3.from_z_radians(torch.randn(1) * np.pi/10) # 8
         new_starts[i, :4] = new_starts[i, :4] + z_rot.wxyz.to(new_starts.device)
-        # else:
-        #     # Random axis rotation
-        #     axis = torch.randn(3).to(new_starts.device)
-        #     axis = axis / torch.norm(axis)
-        #     angle = torch.rand(1).item() * np.pi/3  # Up to 60 degrees
-        #     quat = torch.tensor([np.cos(angle/2), 
-        #                         axis[0] * np.sin(angle/2),
-        #                         axis[1] * np.sin(angle/2),
-        #                         axis[2] * np.sin(angle/2)]).to(new_starts.device)
-        #     new_starts[i, :4] = new_starts[i, :4] + quat
-        #     # Renormalize quaternion
-        #     new_starts[i, :4] = new_starts[i, :4] / torch.norm(new_starts[i, :4])
-    
+
     return new_starts
+
 
 
 def xyzw_to_wxyz(quat):

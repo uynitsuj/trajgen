@@ -7,6 +7,7 @@ import time
 import numpy as np
 # from nerfstudio.utils.eval_utils import eval_setup
 from trajgen.traj_interp import traj_interp_batch, generate_directional_starts
+from trajgen.traj_resampling import resample_traj_catmull_rom, generate_uniform_control_points_batch
 import trajgen.transforms as ttf
 
 
@@ -99,6 +100,34 @@ def main(
         
         interp_traj_splines.append(server.scene.add_spline_catmull_rom(
             f"interp_traj{traj_idx}/catmull_rom",
+            positions=new_traj[:, 4:],  # Use positions from wxyzxyz format
+            line_width=3.0,
+            curve_type="chordal",
+            tension=0.1,
+            color=np.random.uniform(size=3),
+            segments=200,
+        ))
+    
+    # Generate new control points that are uniformly spaced along the arc length
+    # with 1.5x the number of original control points
+    uniform_control_points = generate_uniform_control_points_batch(
+        new_trajs,
+        proportion=1.3,  # 50% more control points than original
+        tension=0.1      # Same tension as used in the original spline
+    )
+    # Now visualize the resampled trajectories
+    for traj_idx, new_traj in enumerate(uniform_control_points):
+        for idx, pose in enumerate(new_traj):
+            interp_traj_frame_handles.append(server.scene.add_frame(
+                name=f"interp_resampled_traj{traj_idx}/deltas/delta_{idx}",
+                axes_length=0.01,
+                axes_radius=0.001,
+                wxyz=pose[:4],  # Take wxyz from the beginning
+                position=pose[4:],  # Take xyz from the end
+            ))
+        
+        interp_traj_splines.append(server.scene.add_spline_catmull_rom(
+            f"interp_resampled_traj{traj_idx}/catmull_rom",
             positions=new_traj[:, 4:],  # Use positions from wxyzxyz format
             line_width=3.0,
             curve_type="chordal",
