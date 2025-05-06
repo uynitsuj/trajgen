@@ -360,7 +360,8 @@ def generate_directional_starts(single_obj_traj, batch_size, magnitude=0.07, dir
         new_starts[i, 4:] = start_pos + displacement
 
     for i in range(batch_size):
-        z_rot = ttf.SO3.from_z_radians(torch.randn(1) * np.pi/10) # 8
+        z_rot = ttf.SO3.from_z_radians((torch.rand(1) * 2 - 1) * np.pi/10) # 8
+        # z_rot = ttf.SO3.from_z_radians((torch.rand(1) * 2 - 1) * np.pi) # 8
         new_starts[i, :4] = new_starts[i, :4] + z_rot.wxyz.to(new_starts.device)
 
     return new_starts
